@@ -1,0 +1,28 @@
+{
+  "_help": "Add or remove sources here. 'bandcamp' = a label/artist subdomain whose /merch page is scanned. 'shopify' = any Shopify store domain (uses its public product search). 'woocommerce' = WordPress/WooCommerce store. 'feed' = an RSS feed that announces releases. New Bandcamp labels that mention Wax Mage are also auto-discovered via Bandcamp search and remembered.",
+  "keyword": "wax mage",
+  "sources": [
+    {"type": "feed", "name": "Gotta Groove Records blog (Wax Mage tag)", "url": "https://www.gottagrooverecords.com/tag/wax-mage/feed/"},
+    {"type": "woocommerce", "name": "Gotta Groove Store", "base": "https://www.gottagroovestore.com"},
+
+    {"type": "bandcamp", "name": "Forge Again Records", "sub": "forgeagainrecords"},
+    {"type": "bandcamp", "name": "Chimney Rocks Records", "sub": "chimneyrocks"},
+    {"type": "bandcamp", "name": "Glory or Death Records", "sub": "gloryordeathrecords"},
+    {"type": "bandcamp", "name": "Moondaddy", "sub": "moondaddyband"},
+    {"type": "bandcamp", "name": "Circular Sign", "sub": "circularsign"},
+    {"type": "bandcamp", "name": "Lynyn", "sub": "lynyn"},
+    {"type": "bandcamp", "name": "Chayla Hope", "sub": "chaylahope"},
+
+    {"type": "shopify", "name": "Hellbender Vinyl", "domain": "hellbendervinyl.com"}
+  ],
+  "bandcamp_discovery": {"enabled": true, "max_new_per_run": 15},
+  "search_links": [
+    {"name": "eBay (Buy It Now)", "url": "https://www.ebay.com/sch/i.html?_nkw=wax+mage+vinyl&LH_BIN=1&_sop=10"},
+    {"name": "eBay (UK)", "url": "https://www.ebay.co.uk/sch/i.html?_nkw=wax+mage+vinyl&LH_BIN=1&_sop=10"},
+    {"name": "Discogs marketplace", "url": "https://www.discogs.com/sell/list?q=wax+mage&format=Vinyl"},
+    {"name": "Discogs releases", "url": "https://www.discogs.com/search/?q=wax+mage&type=release"},
+    {"name": "Bandcamp search", "url": "https://bandcamp.com/search?q=wax+mage"},
+    {"name": "Gotta Groove: Wax Mage posts", "url": "https://www.gottagrooverecords.com/tag/wax-mage/"},
+    {"name": "Google Shopping", "url": "https://www.google.com/search?tbm=shop&q=wax+mage+vinyl"}
+  ]
+}

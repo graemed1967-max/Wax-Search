@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0e0b16">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>Wax Mage Tracker</title>
+<style>
+  :root{
+    --bg:#0e0b16; --panel:#171225; --panel2:#1e1830; --line:#2e2548; --text:#ece8f7; --mute:#9d94b8;
+    --accent:#b48cff; --accent2:#5ee0c4; --warn:#ffb454; --bad:#ff6b8a; --good:#5ee0c4;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 500px at 15% -10%,#2a1a55 0,transparent 60%),
+       radial-gradient(900px 400px at 100% 0,#10314a 0,transparent 55%),var(--bg);
+       color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 16px 60px}
+  header{padding:34px 0 18px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+  .disc{width:54px;height:54px;border-radius:50%;flex:none;
+        background:conic-gradient(from 20deg,#b48cff,#5ee0c4,#ffb454,#ff6b8a,#b48cff);
+        position:relative;box-shadow:0 0 30px #b48cff55}
+  .disc:after{content:"";position:absolute;inset:38%;border-radius:50%;background:var(--bg);border:3px solid #0006}
+  h1{margin:0;font-size:26px;letter-spacing:.2px}
+  .sub{color:var(--mute);font-size:13px}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:8px 0 18px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+  .stat b{display:block;font-size:26px}
+  .stat span{color:var(--mute);font-size:12px;text-transform:uppercase;letter-spacing:.6px}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+  .tab{background:var(--panel);border:1px solid var(--line);color:var(--text);padding:8px 14px;border-radius:999px;cursor:pointer;font:inherit}
+  .tab[aria-selected=true]{background:var(--accent);color:#1a1030;border-color:var(--accent);font-weight:600}
+  .tab small{opacity:.75;margin-left:4px}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+  .controls input,.controls select{background:var(--panel);border:1px solid var(--line);color:var(--text);
+        padding:9px 12px;border-radius:10px;font:inherit}
+  .controls input{flex:1;min-width:180px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+  .card .img{aspect-ratio:16/8;background:linear-gradient(135deg,#2b1d52,#123a4a);display:flex;align-items:center;justify-content:center;color:#ffffff55;font-size:12px}
+  .card .img img{width:100%;height:100%;object-fit:cover}
+  .body{padding:14px;display:flex;flex-direction:column;gap:8px;flex:1}
+  .title{font-weight:600;line-height:1.3}
+  .meta{color:var(--mute);font-size:13px}
+  .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+  .pill{font-size:11px;padding:2px 9px;border-radius:999px;border:1px solid var(--line);color:var(--mute);text-transform:uppercase;letter-spacing:.5px}
+  .pill.in_stock{color:var(--good);border-color:#5ee0c466;background:#5ee0c414}
+  .pill.preorder{color:var(--warn);border-color:#ffb45466;background:#ffb45414}
+  .pill.announced{color:var(--accent);border-color:#b48cff66;background:#b48cff14}
+  .pill.sold_out,.pill.removed{color:var(--bad);border-color:#ff6b8a55;background:#ff6b8a10}
+  .pill.new{background:var(--accent2);color:#06231d;border-color:var(--accent2);font-weight:700}
+  .note{font-size:12.5px;color:var(--mute)}
+  .btn{margin-top:auto;display:inline-block;text-align:center;text-decoration:none;color:#1a1030;background:var(--accent);
+       padding:9px 12px;border-radius:10px;font-weight:600}
+  .btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+  .empty{padding:40px;text-align:center;color:var(--mute);background:var(--panel);border:1px dashed var(--line);border-radius:14px}
+  section.box{margin-top:34px}
+  h2{font-size:17px;margin:0 0 10px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:6px 14px}
+  .ev,.src{display:flex;gap:10px;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
+  .ev:last-child,.src:last-child{border-bottom:0}
+  .ev time,.src .c{color:var(--mute);font-size:12px;white-space:nowrap}
+  .ok{color:var(--good)} .fail{color:var(--bad)}
+  .links{display:flex;flex-wrap:wrap;gap:8px}
+  a{color:var(--accent)}
+  .banner{background:#ffb4541a;border:1px solid #ffb45455;color:#ffd9a3;padding:10px 14px;border-radius:12px;margin-bottom:14px;font-size:13.5px}
+  .tab,.btn,.controls select,.controls input{min-height:44px}
+  @media(max-width:600px){
+    header{padding:22px 0 10px} h1{font-size:22px}
+    .stats{grid-template-columns:1fr 1fr} .stat b{font-size:22px}
+    .tabs{flex-wrap:nowrap;overflow-x:auto;margin-right:-16px;padding-right:16px;scrollbar-width:none}
+    .tab{white-space:nowrap}
+    .controls input{flex-basis:100%} .controls select{flex:1;min-width:0;padding:9px 6px} .grid{grid-template-columns:1fr}
+    .card .img{aspect-ratio:16/5}
+  }
+  footer{margin-top:40px;color:var(--mute);font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="disc" aria-hidden="true"></div>
+    <div>
+      <h1>Wax Mage Tracker</h1>
+      <div class="sub" id="updated">Loading…</div>
+    </div>
+  </header>
+
+  <div id="banner"></div>
+  <div class="stats" id="stats"></div>
+
+  <div class="tabs" role="tablist" id="tabs"></div>
+  <div class="controls">
+    <input id="q" type="search" placeholder="Search artist, title, label…">
+    <select id="seller"><option value="">All sellers</option></select>
+    <select id="kind">
+      <option value="">All types</option><option>Edition</option><option>Collab</option>
+      <option>Exclusive</option><option>Variant</option>
+    </select>
+    <select id="sort">
+      <option value="new">Newest first</option><option value="price">Price: low to high</option>
+      <option value="name">Name A–Z</option>
+    </select>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <section class="box"><h2>Recent activity</h2><div class="panel" id="events"></div></section>
+  <section class="box"><h2>Look elsewhere</h2>
+    <p class="meta" style="margin:0 0 10px">Marketplaces that can't be scanned automatically. These open live searches.</p>
+    <div class="links" id="links"></div></section>
+  <section class="box"><h2>Sources scanned</h2><div class="panel" id="sources"></div></section>
+
+  <footer>Wax Mage pressings come in three flavours: <b>Editions</b> (hand-poured, /25),
+    <b>Collabs</b> (limited, with another label) and <b>Exclusives</b> (sold only by Wax Mage).
+    Prices are as shown by each seller; check the seller's page before buying.</footer>
+</div>
+
+<script src="data.js"></script>
+<script>
+const D = window.WAXMAGE_DATA || {items:[],events:[],sources:[],search_links:[]};
+const $ = id => document.getElementById(id);
+const DAY = 864e5;
+const LABEL = {in_stock:"In stock",preorder:"Pre-order",announced:"Announced",sold_out:"Sold out",
+               removed:"Gone",unverified:"Unverified",archive:"Archive"};
+const TABS = [
+  ["available","Available now",i=>["in_stock","preorder"].includes(i.status)],
+  ["upcoming","Announced",i=>["announced","unverified"].includes(i.status)],
+  ["sold","Sold out",i=>["sold_out","removed"].includes(i.status)],
+  ["all","Everything",i=>true],
+];
+let tab = "available";
+
+const esc = s => String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const safeUrl = u => /^https?:\/\//i.test(u||"") ? u : "#";
+const ageDays = iso => iso ? (Date.now()-Date.parse(iso))/DAY : 1e9;
+const isNew = i => ageDays(i.first_seen) <= 7 && i.source !== "seed";
+const priceNum = p => { const m = String(p||"").replace(/,/g,"").match(/\d+(\.\d+)?/); return m ? parseFloat(m[0]) : 1e9; };
+const fmtDate = iso => iso ? new Date(iso).toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"}) : "";
+const fmtTime = iso => iso ? new Date(iso).toLocaleString(undefined,{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}) : "";
+
+function init(){
+  $("updated").textContent = D.generated ? "Last scan: " + fmtTime(D.generated) : "No scan yet";
+  const failing = (D.sources||[]).filter(s=>!s.ok).length;
+  const ok = (D.sources||[]).filter(s=>s.ok).length;
+  let b = "";
+  if (!D.generated) b = "No scan has run yet. Run <code>python tracker.py</code> to fetch live stock.";
+  else if (ageDays(D.generated) > 2) b = "This data is over 2 days old. Run the tracker again for fresh stock.";
+  else if (D.items.some(i=>i.source==="seed") && ok===0) b = "Showing starter entries only. Run <code>python tracker.py</code> to check live stock.";
+  $("banner").innerHTML = b ? `<div class="banner">${b}</div>` : "";
+
+  const sellers = [...new Set(D.items.map(i=>i.seller))].sort();
+  $("seller").innerHTML = '<option value="">All sellers</option>' + sellers.map(s=>`<option>${esc(s)}</option>`).join("");
+
+  $("links").innerHTML = (D.search_links||[]).map(l=>`<a class="btn ghost" target="_blank" rel="noopener" href="${esc(safeUrl(l.url))}">${esc(l.name)} ↗</a>`).join("");
+  $("sources").innerHTML = (D.sources||[]).length ? D.sources.map(s=>
+    `<div class="src"><span>${esc(s.name)} <span class="meta">(${esc(s.type)})</span></span>
+     <span class="c ${s.ok?"ok":"fail"}">${s.ok? s.count+" found" : "unreachable"}</span></div>`).join("")
+    : '<div class="src"><span class="meta">No scan yet.</span></div>';
+  $("events").innerHTML = (D.events||[]).length ? D.events.slice(0,25).map(e=>{
+      const what = e.type==="new" ? `New: <b>${esc(e.title)}</b> <span class="meta">at ${esc(e.seller)}</span>`
+        : `<b>${esc(e.title)}</b> <span class="meta">${esc(LABEL[e.from]||e.from)} → ${esc(LABEL[e.to]||e.to)} at ${esc(e.seller)}</span>`;
+      return `<div class="ev"><span>${what}</span><time>${esc(fmtTime(e.ts))}</time></div>`;
+    }).join("") : '<div class="ev"><span class="meta">Changes will show up here after the second scan.</span></div>';
+
+  $("tabs").innerHTML = TABS.map(([k,l,f])=>
+    `<button class="tab" role="tab" data-k="${k}" aria-selected="${k===tab}">${l}<small>${D.items.filter(f).length}</small></button>`).join("");
+  document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{tab=t.dataset.k;init();render();});
+  stats();
+}
+
+function stats(){
+  const n = f => D.items.filter(f).length;
+  const cards = [
+    [n(i=>i.status==="in_stock"),"In stock now"],
+    [n(i=>i.status==="preorder"),"Open pre-orders"],
+    [n(i=>["announced","unverified"].includes(i.status)),"Announced / to check"],
+    [n(isNew),"New this week"],
+  ];
+  $("stats").innerHTML = cards.map(([v,l])=>`<div class="stat"><b>${v}</b><span>${l}</span></div>`).join("");
+}
+
+function render(){
+  const f = TABS.find(t=>t[0]===tab)[2];
+  const q = $("q").value.toLowerCase().trim(), s = $("seller").value, k = $("kind").value, so = $("sort").value;
+  let list = D.items.filter(f).filter(i=>
+    (!q || (i.title+" "+i.seller+" "+i.note).toLowerCase().includes(q)) &&
+    (!s || i.seller===s) && (!k || i.kind===k));
+  list.sort((a,b)=> so==="price" ? priceNum(a.price)-priceNum(b.price)
+                  : so==="name" ? a.title.localeCompare(b.title)
+                  : (b.first_seen||"").localeCompare(a.first_seen||""));
+  $("grid").innerHTML = list.length ? list.map(card).join("")
+    : `<div class="empty" style="grid-column:1/-1">Nothing here right now.${tab==="available"?" New stock will appear after the next scan.":""}</div>`;
+}
+
+function card(i){
+  const pills = [`<span class="pill ${esc(i.status)}">${esc(LABEL[i.status]||i.status)}</span>`,
+                 `<span class="pill">${esc(i.kind)}</span>`];
+  if (i.edition_size) pills.push(`<span class="pill">/${esc(i.edition_size)}</span>`);
+  if (isNew(i)) pills.unshift('<span class="pill new">New</span>');
+  const bits = [esc(i.seller)];
+  if (i.price) bits.push(esc(i.price));
+  if (i.release_date) bits.push("Release " + esc(fmtDate(i.release_date)));
+  else if (i.posted) bits.push("Posted " + esc(fmtDate(i.posted)));
+  const img = i.image ? `<img loading="lazy" alt="" src="${esc(safeUrl(i.image))}" onerror="this.remove()">` : "Wax Mage";
+  const cta = ["sold_out","removed"].includes(i.status) ? "View page" : i.status==="announced" ? "Read announcement" : "Open store page";
+  return `<article class="card"><div class="img">${img}</div><div class="body">
+    <div class="row">${pills.join("")}</div>
+    <div class="title">${esc(i.title)}</div>
+    <div class="meta">${bits.join(" · ")}</div>
+    ${i.note?`<div class="note">${esc(i.note)}</div>`:""}
+    <a class="btn ${["sold_out","removed"].includes(i.status)?"ghost":""}" target="_blank" rel="noopener" href="${esc(safeUrl(i.url))}">${cta} ↗</a>
+  </div></article>`;
+}
+
+["q","seller","kind","sort"].forEach(id=>$(id).addEventListener("input",render));
+init(); render();
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script>
+</body>
+</html>
