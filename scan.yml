@@ -1,0 +1,34 @@
+name: Scan Wax Mage stock
+on:
+  schedule:
+    - cron: "17 * * * *"   # hourly
+  workflow_dispatch: {}
+permissions:
+  contents: write
+concurrency: scan
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r requirements.txt
+      - run: python tracker.py
+      - name: Phone notification (optional)
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: |
+          if [ -n "$NTFY_TOPIC" ] && [ -s notify.txt ]; then
+            OWNER="${GITHUB_REPOSITORY%%/*}"; REPO="${GITHUB_REPOSITORY##*/}"
+            curl -s -H "Title: Wax Mage update" -H "Tags: vinyl" \
+                 -H "Click: https://${OWNER}.github.io/${REPO}/" \
+                 --data-binary @notify.txt "https://ntfy.sh/${NTFY_TOPIC}"
+          fi
+      - name: Commit changes
+        run: |
+          git config user.name "wax-mage-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add data.json data.js
+          git diff --cached --quiet || git commit -m "Update stock data"
+          git push || true
